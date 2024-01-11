@@ -108,8 +108,11 @@ static int ddc_init(snd_pcm_extplug_t *ext)
 {
     snd_pcm_ddc_t *ddc = (snd_pcm_ddc_t *)ext;
 
-    ddc->ddc_enable = 1;
     ddc->samplerate = ext->rate;
+    if(ddc->ddc_enable)
+        return 0;
+
+    ddc->ddc_enable = 1;
 #ifdef DEBUG
     printf("samplerate: %d\n", ddc->samplerate);
     printf("ddc file: %s\n", ddc->ddc_file);
@@ -230,6 +233,7 @@ SND_PCM_PLUGIN_DEFINE_FUNC(ddc)
         free(ddc);
         return -1;
     }
+    ddc->ddc_enable = 0;
 
     err = snd_pcm_extplug_create(&ddc->ext, name, root, sconf, stream, mode);
     if (err < 0) {
